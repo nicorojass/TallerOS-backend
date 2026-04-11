@@ -26,14 +26,16 @@ public class ClienteService {
     private TenantRepository tenantRepository;
     
     // MAPPER 
-    public ClienteResponse toResponse(Cliente cliente) {
+    private ClienteResponse toResponse(Cliente c) {
         return ClienteResponse.builder()
-                .id(cliente.getId())
-                .nombre(cliente.getNombre())
-                .apellido(cliente.getApellido())
-                .telefono(cliente.getTelefono())
-                .email(cliente.getEmail())
-                .dni(cliente.getDni())
+                .id(c.getId())
+                .nombre(c.getNombre())
+                .apellido(c.getApellido())
+                .telefono(c.getTelefono())
+                .email(c.getEmail())
+                .dni(c.getDni())
+                .cantidadVehiculos(c.getVehiculos().size())
+                .createdAt(c.getCreatedAt()) // ← verificá que esta línea esté
                 .build();
     }
 

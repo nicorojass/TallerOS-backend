@@ -3,8 +3,8 @@ spring.application.name=TallerOS
 
 # Base de datos (MySQL)
 spring.datasource.url=jdbc:mysql://localhost:3306/talleros_db
-spring.datasource.username=root
-spring.datasource.password=sasa
+spring.datasource.username=
+spring.datasource.password=
 
 # JPA
 spring.jpa.hibernate.ddl-auto=update
@@ -12,8 +12,8 @@ spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
 
-# JWT (cambiá el secret en producción)
-jwt.secret=talleros_super_secret_key_2024_cambiame
+# JWT
+jwt.secret=
 jwt.expiration=86400000
 
 # Swagger
