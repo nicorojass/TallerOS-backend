@@ -3,6 +3,7 @@ package com.talleros.modules.vehiculo.controller;
 import com.talleros.modules.vehiculo.dto.VehiculoRequest;
 import com.talleros.modules.vehiculo.dto.VehiculoResponse;
 import com.talleros.modules.vehiculo.service.VehiculoService;
+import com.talleros.multitenancy.TenantContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,61 +18,44 @@ import java.util.List;
 public class VehiculoController {
 
     private final VehiculoService vehiculoService;
+    private final TenantContext tenantContext;
 
-    // GET /api/vehiculos?tenantId=1
     @GetMapping
-    public ResponseEntity<List<VehiculoResponse>> obtenerTodos(@RequestParam Long tenantId) {
-        return ResponseEntity.ok(vehiculoService.obtenerTodos(tenantId));
+    public ResponseEntity<List<VehiculoResponse>> obtenerTodos() {
+        return ResponseEntity.ok(vehiculoService.obtenerTodos(tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/vehiculos/1?tenantId=1
     @GetMapping("/{id}")
-    public ResponseEntity<VehiculoResponse> obtenerPorId(
-            @PathVariable Long id,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(vehiculoService.obtenerPorId(id, tenantId));
+    public ResponseEntity<VehiculoResponse> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(vehiculoService.obtenerPorId(id, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/vehiculos/cliente/1?tenantId=1
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<VehiculoResponse>> obtenerPorCliente(
-            @PathVariable Long clienteId,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(vehiculoService.obtenerPorCliente(clienteId, tenantId));
+    public ResponseEntity<List<VehiculoResponse>> obtenerPorCliente(@PathVariable Long clienteId) {
+        return ResponseEntity.ok(vehiculoService.obtenerPorCliente(clienteId, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/vehiculos/patente/ABC123?tenantId=1
     @GetMapping("/patente/{patente}")
-    public ResponseEntity<VehiculoResponse> obtenerPorPatente(
-            @PathVariable String patente,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(vehiculoService.obtenerPorPatente(patente, tenantId));
+    public ResponseEntity<VehiculoResponse> obtenerPorPatente(@PathVariable String patente) {
+        return ResponseEntity.ok(vehiculoService.obtenerPorPatente(patente, tenantContext.getCurrentTenantId()));
     }
 
-    // POST /api/vehiculos?tenantId=1
     @PostMapping
-    public ResponseEntity<VehiculoResponse> crear(
-            @RequestBody @Valid VehiculoRequest request,
-            @RequestParam Long tenantId) {
+    public ResponseEntity<VehiculoResponse> crear(@RequestBody @Valid VehiculoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(vehiculoService.crear(request, tenantId));
+                .body(vehiculoService.crear(request, tenantContext.getCurrentTenantId()));
     }
 
-    // PUT /api/vehiculos/1?tenantId=1
     @PutMapping("/{id}")
     public ResponseEntity<VehiculoResponse> actualizar(
             @PathVariable Long id,
-            @RequestBody @Valid VehiculoRequest request,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(vehiculoService.actualizar(id, request, tenantId));
+            @RequestBody @Valid VehiculoRequest request) {
+        return ResponseEntity.ok(vehiculoService.actualizar(id, request, tenantContext.getCurrentTenantId()));
     }
 
-    // DELETE /api/vehiculos/1?tenantId=1
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @PathVariable Long id,
-            @RequestParam Long tenantId) {
-        vehiculoService.eliminar(id, tenantId);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        vehiculoService.eliminar(id, tenantContext.getCurrentTenantId());
         return ResponseEntity.noContent().build();
     }
 }

@@ -4,6 +4,7 @@ import com.talleros.modules.turno.dto.TurnoRequest;
 import com.talleros.modules.turno.dto.TurnoResponse;
 import com.talleros.modules.turno.model.Turno.EstadoTurno;
 import com.talleros.modules.turno.service.TurnoService;
+import com.talleros.multitenancy.TenantContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,85 +21,63 @@ import java.util.List;
 public class TurnoController {
 
     private final TurnoService turnoService;
+    private final TenantContext tenantContext;
 
-    // GET /api/turnos?tenantId=1
     @GetMapping
-    public ResponseEntity<List<TurnoResponse>> obtenerTodos(@RequestParam Long tenantId) {
-        return ResponseEntity.ok(turnoService.obtenerTodos(tenantId));
+    public ResponseEntity<List<TurnoResponse>> obtenerTodos() {
+        return ResponseEntity.ok(turnoService.obtenerTodos(tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/turnos/1?tenantId=1
     @GetMapping("/{id}")
-    public ResponseEntity<TurnoResponse> obtenerPorId(
-            @PathVariable Long id,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(turnoService.obtenerPorId(id, tenantId));
+    public ResponseEntity<TurnoResponse> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(turnoService.obtenerPorId(id, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/turnos/estado/PENDIENTE?tenantId=1
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<TurnoResponse>> obtenerPorEstado(
-            @PathVariable EstadoTurno estado,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(turnoService.obtenerPorEstado(estado, tenantId));
+    public ResponseEntity<List<TurnoResponse>> obtenerPorEstado(@PathVariable EstadoTurno estado) {
+        return ResponseEntity.ok(turnoService.obtenerPorEstado(estado, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/turnos/cliente/1?tenantId=1
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<TurnoResponse>> obtenerPorCliente(
-            @PathVariable Long clienteId,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(turnoService.obtenerPorCliente(clienteId, tenantId));
+    public ResponseEntity<List<TurnoResponse>> obtenerPorCliente(@PathVariable Long clienteId) {
+        return ResponseEntity.ok(turnoService.obtenerPorCliente(clienteId, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/turnos/hoy?tenantId=1
     @GetMapping("/hoy")
-    public ResponseEntity<List<TurnoResponse>> obtenerDelDia(@RequestParam Long tenantId) {
-        return ResponseEntity.ok(turnoService.obtenerDelDia(tenantId));
+    public ResponseEntity<List<TurnoResponse>> obtenerDelDia() {
+        return ResponseEntity.ok(turnoService.obtenerDelDia(tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/turnos/rango?inicio=2025-01-01T00:00:00&fin=2025-01-07T23:59:59&tenantId=1
     @GetMapping("/rango")
     public ResponseEntity<List<TurnoResponse>> obtenerPorRango(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime inicio,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fin,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(turnoService.obtenerPorRango(inicio, fin, tenantId));
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fin) {
+        return ResponseEntity.ok(turnoService.obtenerPorRango(inicio, fin, tenantContext.getCurrentTenantId()));
     }
 
-    // POST /api/turnos?tenantId=1
     @PostMapping
-    public ResponseEntity<TurnoResponse> crear(
-            @RequestBody @Valid TurnoRequest request,
-            @RequestParam Long tenantId) {
+    public ResponseEntity<TurnoResponse> crear(@RequestBody @Valid TurnoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(turnoService.crear(request, tenantId));
+                .body(turnoService.crear(request, tenantContext.getCurrentTenantId()));
     }
 
-    // PATCH /api/turnos/1/estado?nuevoEstado=CONFIRMADO&tenantId=1
     @PatchMapping("/{id}/estado")
     public ResponseEntity<TurnoResponse> cambiarEstado(
             @PathVariable Long id,
-            @RequestParam EstadoTurno nuevoEstado,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(turnoService.cambiarEstado(id, nuevoEstado, tenantId));
+            @RequestParam EstadoTurno nuevoEstado) {
+        return ResponseEntity.ok(turnoService.cambiarEstado(id, nuevoEstado, tenantContext.getCurrentTenantId()));
     }
 
-    // PUT /api/turnos/1?tenantId=1
     @PutMapping("/{id}")
     public ResponseEntity<TurnoResponse> actualizar(
             @PathVariable Long id,
-            @RequestBody @Valid TurnoRequest request,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(turnoService.actualizar(id, request, tenantId));
+            @RequestBody @Valid TurnoRequest request) {
+        return ResponseEntity.ok(turnoService.actualizar(id, request, tenantContext.getCurrentTenantId()));
     }
 
-    // DELETE /api/turnos/1?tenantId=1
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @PathVariable Long id,
-            @RequestParam Long tenantId) {
-        turnoService.eliminar(id, tenantId);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        turnoService.eliminar(id, tenantContext.getCurrentTenantId());
         return ResponseEntity.noContent().build();
     }
 }

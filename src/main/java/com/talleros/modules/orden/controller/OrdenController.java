@@ -4,6 +4,7 @@ import com.talleros.modules.orden.dto.OrdenRequest;
 import com.talleros.modules.orden.dto.OrdenResponse;
 import com.talleros.modules.orden.model.OrdenDeTrabajo.EstadoOT;
 import com.talleros.modules.orden.service.OrdenService;
+import com.talleros.multitenancy.TenantContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,84 +19,61 @@ import java.util.List;
 public class OrdenController {
 
     private final OrdenService ordenService;
+    private final TenantContext tenantContext;
 
-    // GET /api/ordenes?tenantId=1
     @GetMapping
-    public ResponseEntity<List<OrdenResponse>> obtenerTodas(@RequestParam Long tenantId) {
-        return ResponseEntity.ok(ordenService.obtenerTodas(tenantId));
+    public ResponseEntity<List<OrdenResponse>> obtenerTodas() {
+        return ResponseEntity.ok(ordenService.obtenerTodas(tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/ordenes/1?tenantId=1
     @GetMapping("/{id}")
-    public ResponseEntity<OrdenResponse> obtenerPorId(
-            @PathVariable Long id,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(ordenService.obtenerPorId(id, tenantId));
+    public ResponseEntity<OrdenResponse> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(ordenService.obtenerPorId(id, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/ordenes/estado/EN_PROCESO?tenantId=1  (Kanban)
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<List<OrdenResponse>> obtenerPorEstado(
-            @PathVariable EstadoOT estado,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(ordenService.obtenerPorEstado(estado, tenantId));
+    public ResponseEntity<List<OrdenResponse>> obtenerPorEstado(@PathVariable EstadoOT estado) {
+        return ResponseEntity.ok(ordenService.obtenerPorEstado(estado, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/ordenes/vehiculo/1?tenantId=1  (historial)
     @GetMapping("/vehiculo/{vehiculoId}")
-    public ResponseEntity<List<OrdenResponse>> obtenerPorVehiculo(
-            @PathVariable Long vehiculoId,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(ordenService.obtenerPorVehiculo(vehiculoId, tenantId));
+    public ResponseEntity<List<OrdenResponse>> obtenerPorVehiculo(@PathVariable Long vehiculoId) {
+        return ResponseEntity.ok(ordenService.obtenerPorVehiculo(vehiculoId, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/ordenes/cliente/1?tenantId=1
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<OrdenResponse>> obtenerPorCliente(
-            @PathVariable Long clienteId,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(ordenService.obtenerPorCliente(clienteId, tenantId));
+    public ResponseEntity<List<OrdenResponse>> obtenerPorCliente(@PathVariable Long clienteId) {
+        return ResponseEntity.ok(ordenService.obtenerPorCliente(clienteId, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/ordenes/hoy?tenantId=1  (dashboard)
     @GetMapping("/hoy")
-    public ResponseEntity<List<OrdenResponse>> obtenerDelDia(@RequestParam Long tenantId) {
-        return ResponseEntity.ok(ordenService.obtenerDelDia(tenantId));
+    public ResponseEntity<List<OrdenResponse>> obtenerDelDia() {
+        return ResponseEntity.ok(ordenService.obtenerDelDia(tenantContext.getCurrentTenantId()));
     }
 
-    // POST /api/ordenes?tenantId=1
     @PostMapping
-    public ResponseEntity<OrdenResponse> crear(
-            @RequestBody @Valid OrdenRequest request,
-            @RequestParam Long tenantId) {
+    public ResponseEntity<OrdenResponse> crear(@RequestBody @Valid OrdenRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ordenService.crear(request, tenantId));
+                .body(ordenService.crear(request, tenantContext.getCurrentTenantId()));
     }
 
-    // PATCH /api/ordenes/1/estado?nuevoEstado=EN_PROCESO&tenantId=1
     @PatchMapping("/{id}/estado")
     public ResponseEntity<OrdenResponse> cambiarEstado(
             @PathVariable Long id,
-            @RequestParam EstadoOT nuevoEstado,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(ordenService.cambiarEstado(id, nuevoEstado, tenantId));
+            @RequestParam EstadoOT nuevoEstado) {
+        return ResponseEntity.ok(ordenService.cambiarEstado(id, nuevoEstado, tenantContext.getCurrentTenantId()));
     }
 
-    // PUT /api/ordenes/1?tenantId=1
     @PutMapping("/{id}")
     public ResponseEntity<OrdenResponse> actualizar(
             @PathVariable Long id,
-            @RequestBody @Valid OrdenRequest request,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(ordenService.actualizar(id, request, tenantId));
+            @RequestBody @Valid OrdenRequest request) {
+        return ResponseEntity.ok(ordenService.actualizar(id, request, tenantContext.getCurrentTenantId()));
     }
 
-    // DELETE /api/ordenes/1?tenantId=1
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @PathVariable Long id,
-            @RequestParam Long tenantId) {
-        ordenService.eliminar(id, tenantId);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        ordenService.eliminar(id, tenantContext.getCurrentTenantId());
         return ResponseEntity.noContent().build();
     }
 }

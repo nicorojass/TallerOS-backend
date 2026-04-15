@@ -3,6 +3,7 @@ package com.talleros.modules.repuesto.controller;
 import com.talleros.modules.repuesto.dto.RepuestoRequest;
 import com.talleros.modules.repuesto.dto.RepuestoResponse;
 import com.talleros.modules.repuesto.service.RepuestoService;
+import com.talleros.multitenancy.TenantContext;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,76 +18,56 @@ import java.util.List;
 public class RepuestoController {
 
     private final RepuestoService repuestoService;
+    private final TenantContext tenantContext;
 
-    // GET /api/repuestos?tenantId=1
     @GetMapping
-    public ResponseEntity<List<RepuestoResponse>> obtenerTodos(@RequestParam Long tenantId) {
-        return ResponseEntity.ok(repuestoService.obtenerTodos(tenantId));
+    public ResponseEntity<List<RepuestoResponse>> obtenerTodos() {
+        return ResponseEntity.ok(repuestoService.obtenerTodos(tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/repuestos/1?tenantId=1
     @GetMapping("/{id}")
-    public ResponseEntity<RepuestoResponse> obtenerPorId(
-            @PathVariable Long id,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(repuestoService.obtenerPorId(id, tenantId));
+    public ResponseEntity<RepuestoResponse> obtenerPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(repuestoService.obtenerPorId(id, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/repuestos/buscar?nombre=filtro&tenantId=1
     @GetMapping("/buscar")
-    public ResponseEntity<List<RepuestoResponse>> buscar(
-            @RequestParam String nombre,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(repuestoService.buscar(nombre, tenantId));
+    public ResponseEntity<List<RepuestoResponse>> buscar(@RequestParam String nombre) {
+        return ResponseEntity.ok(repuestoService.buscar(nombre, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/repuestos/categoria/frenos?tenantId=1
     @GetMapping("/categoria/{categoria}")
-    public ResponseEntity<List<RepuestoResponse>> obtenerPorCategoria(
-            @PathVariable String categoria,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(repuestoService.obtenerPorCategoria(categoria, tenantId));
+    public ResponseEntity<List<RepuestoResponse>> obtenerPorCategoria(@PathVariable String categoria) {
+        return ResponseEntity.ok(repuestoService.obtenerPorCategoria(categoria, tenantContext.getCurrentTenantId()));
     }
 
-    // GET /api/repuestos/stock-bajo?tenantId=1
     @GetMapping("/stock-bajo")
-    public ResponseEntity<List<RepuestoResponse>> obtenerStockBajo(@RequestParam Long tenantId) {
-        return ResponseEntity.ok(repuestoService.obtenerStockBajo(tenantId));
+    public ResponseEntity<List<RepuestoResponse>> obtenerStockBajo() {
+        return ResponseEntity.ok(repuestoService.obtenerStockBajo(tenantContext.getCurrentTenantId()));
     }
 
-    // POST /api/repuestos?tenantId=1
     @PostMapping
-    public ResponseEntity<RepuestoResponse> crear(
-            @RequestBody @Valid RepuestoRequest request,
-            @RequestParam Long tenantId) {
+    public ResponseEntity<RepuestoResponse> crear(@RequestBody @Valid RepuestoRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(repuestoService.crear(request, tenantId));
+                .body(repuestoService.crear(request, tenantContext.getCurrentTenantId()));
     }
 
-    // PUT /api/repuestos/1?tenantId=1
     @PutMapping("/{id}")
     public ResponseEntity<RepuestoResponse> actualizar(
             @PathVariable Long id,
-            @RequestBody @Valid RepuestoRequest request,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(repuestoService.actualizar(id, request, tenantId));
+            @RequestBody @Valid RepuestoRequest request) {
+        return ResponseEntity.ok(repuestoService.actualizar(id, request, tenantContext.getCurrentTenantId()));
     }
 
-    // PATCH /api/repuestos/1/stock?cantidad=5&tenantId=1
     @PatchMapping("/{id}/stock")
     public ResponseEntity<RepuestoResponse> ajustarStock(
             @PathVariable Long id,
-            @RequestParam int cantidad,
-            @RequestParam Long tenantId) {
-        return ResponseEntity.ok(repuestoService.ajustarStock(id, cantidad, tenantId));
+            @RequestParam int cantidad) {
+        return ResponseEntity.ok(repuestoService.ajustarStock(id, cantidad, tenantContext.getCurrentTenantId()));
     }
 
-    // DELETE /api/repuestos/1?tenantId=1
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
-            @PathVariable Long id,
-            @RequestParam Long tenantId) {
-        repuestoService.eliminar(id, tenantId);
+    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+        repuestoService.eliminar(id, tenantContext.getCurrentTenantId());
         return ResponseEntity.noContent().build();
     }
 }
