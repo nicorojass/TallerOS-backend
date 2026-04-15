@@ -23,7 +23,7 @@ public class Repuesto {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(unique = true)
+    @Column
     private String codigo;
 
     @Column
