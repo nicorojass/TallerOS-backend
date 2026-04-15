@@ -28,7 +28,7 @@ public class Cliente {
     @Column(nullable = false)
     private String apellido;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String telefono;
 
     @Column
