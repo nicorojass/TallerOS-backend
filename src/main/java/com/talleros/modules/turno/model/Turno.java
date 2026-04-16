@@ -62,7 +62,7 @@ public class Turno {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
-        if (estado == null) estado = EstadoTurno.PENDIENTE;
+        if (estado == null) estado = EstadoTurno.CONFIRMADO;
     }
 
     @PreUpdate
@@ -73,6 +73,6 @@ public class Turno {
     // ── Enum ────────────────────────────────────────────────────
 
     public enum EstadoTurno {
-        PENDIENTE, CONFIRMADO, CANCELADO, COMPLETADO
+        CONFIRMADO, CANCELADO, COMPLETADO
     }
 }

@@ -127,6 +127,9 @@ public class TurnoService {
         Turno turno = turnoRepository.findById(id)
                 .filter(t -> t.getTenant().getId().equals(tenantId))
                 .orElseThrow(() -> new RuntimeException("Turno no encontrado"));
+        if (nuevoEstado != EstadoTurno.COMPLETADO && nuevoEstado != EstadoTurno.CANCELADO) {
+            throw new RuntimeException("Solo se puede cambiar el estado a COMPLETADO o CANCELADO");
+        }
         turno.setEstado(nuevoEstado);
         return toResponse(turnoRepository.save(turno));
     }
